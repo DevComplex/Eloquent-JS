@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+            .tabs-container {
+                display: flex;
+            }
+
+            .tab {
+                width: 50px;
+                height: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .tab--selected {
+                background-color: orange;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root">
+        </div>
+        <script>
+            const root = document.getElementById('root')
+
+            const tabs = {
+                'one': 'this is the first tab',
+                'two': 'this is the second tab',
+                'three': 'this is the third tab',
+                'four': 'this is the fourth tab'
+            }
+    
+            class Tab {
+                constructor(tabName, onClick, isSelected) {
+                    this._tabName = tabName
+                    this._onClick = onClick
+                    this._isSelected = isSelected
+                }
+    
+                render() {
+                    const tab = createElement('div', {class: this._isSelected ? 'tab tab--selected' : 'tab'})
+                    tab.textContent = this._tabName
+                    tab.addEventListener('click', this._onClick)
+                    return tab
+                }
+            }
+    
+            class TabInterface {
+                constructor(tabs) {
+                    this._tabs = tabs
+                    this._tabNames = Object.keys(tabs)
+                    this._selectedTab = this._tabNames[0]
+                    this._tabbedInterface = null
+                }
+    
+                setSelectedTab(tabName) {
+                    this._selectedTab = tabName
+                }
+    
+                render(parent) {
+                    if (this._tabbedInterface) {
+                        parent.removeChild(this._tabbedInterface)
+                    }
+
+                    const context = this
+    
+                    const tabs = context._tabNames.map(tabName => {
+                        const handleClick = () => {
+                            context.setSelectedTab(tabName)
+                            context.render(parent)
+                        }
+    
+                        const isSelected = tabName === context._selectedTab
+    
+                        const tab = new Tab(tabName, handleClick, isSelected)
+                        return tab.render()
+                    })
+    
+                    const tabContent = createElement('div', {class: 'tab-content'})
+                    tabContent.textContent = context._tabs[context._selectedTab]
+    
+                    const tabsContainer = createElement('div', {class: 'tabs-container'})
+    
+                    const tabInterface = createElement('div', {class: 'tab-interface'})
+    
+                    for(const tab of tabs) {
+                        tabsContainer.appendChild(tab)
+                    }
+    
+                    tabInterface.appendChild(tabsContainer)
+                    tabInterface.appendChild(tabContent)
+    
+                    this._tabbedInterface = tabInterface
+                    
+                    parent.appendChild(tabInterface)
+                }
+            }
+    
+    
+            function createElement(type, props) {
+                const element = document.createElement(type)
+    
+                Object.keys(props).forEach(prop => {
+                    const value = props[prop]
+                    element.setAttribute(prop, value)
+                })
+
+                return element
+            }
+    
+
+            const ti1 = new TabInterface(tabs)
+
+            ti1.render(root)
+        </script>
+    </body>
+</html>
