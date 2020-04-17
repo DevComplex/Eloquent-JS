@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html>
+    <style>
+        #root {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <head>
+        <div id="root"></div>
+    </head>
+    <body>
+        <script>
+            const root = document.getElementById('root')
+            const b = Balloon(10, 1000)
+
+            root.appendChild(b)
+
+            function Balloon(start, threshold) {
+                let currSize = start
+                
+                const balloon = createElement('div', {class: 'balloon', style: {fontSize: `${currSize}px`}})
+                
+                balloon.innerHTML = '&#x1f388;'
+
+                function handleKeydown(e) {
+                    const UP_ARROW = 38
+                    const DOWN_ARROW = 40
+
+                    const { keyCode } = e
+
+                    if (keyCode === UP_ARROW) {
+                        currSize = currSize * 0.10 + currSize
+
+                        if (currSize >= threshold) {
+                            document.removeEventListener('keydown', handleKeydown)
+                            balloon.innerHTML = '&#x1f4a5;'
+                        } else {
+                            balloon.style.fontSize = `${currSize}px`
+                        }
+                    } else if (keyCode === DOWN_ARROW) {
+                        currSize = currSize - currSize * 0.10
+
+                        if (currSize < 1) {
+                            currSize = 1
+                        }
+
+                        balloon.style.fontSize = `${currSize}px`
+                    }
+                }
+
+                document.addEventListener('keydown', handleKeydown)
+
+                return balloon
+            }
+
+            function createElement(type, props) {
+                const element = document.createElement(type)
+    
+                Object.keys(props).forEach(prop => {
+                    const value = props[prop]
+                    element.setAttribute(prop, value)
+                })
+
+                return element
+            }
+        </script>
+    </body>
+</html>
