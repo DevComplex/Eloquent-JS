@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600&display=swap" rel="stylesheet">
+        <style>
+            html {
+                font-family: 'Manrope', sans-serif;
+            }
+
+            .box {
+                height: 300px;
+                width: 300px;
+                border-radius: 4px;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: white;
+                font-size: 24px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root">
+
+        </div>
+        <script>
+            let selectedBoxIndex = 0
+
+            const boxes = ['orange', 'black', 'green', 'purple', 'blue', 'red', 'yellow'].map(color => {
+                const box = document.createElement('div')
+                box.classList.add('box')
+                box.style.backgroundColor = color
+
+                setInterval(() => {
+                    const randomText = Math.random() < 0.5 ? 'ONE INTUIT!!!@!@!!' : 'POWERING PROSPERITY!@@!'
+                    box.textContent = randomText
+                }, 1000)
+
+                return box
+            })
+
+            const root = document.getElementById('root')
+
+            boxes.forEach(box => {
+                root.appendChild(box)
+            })
+
+
+            const debounce = (fn, time) => {
+                let timeout
+
+                return (args) => {
+                    clearTimeout(timeout)
+
+                    timeout = setTimeout(() => {
+                        fn.call(null, args)
+                    }, time)
+                }
+            }
+
+            const handleMousemove = (e) => {
+                const { screenX, screenY } = e
+
+                requestAnimationFrame(() => {
+                    const box = boxes[selectedBoxIndex]
+
+                    box.style.position = 'absolute'
+                    box.style.left = `${screenX}px`
+                    box.style.top = `${screenY}px`
+
+                    setTimeout(() => {
+                        if (selectedBoxIndex === boxes.length - 1) {
+                                selectedBoxIndex = 0
+                        } else {
+                            selectedBoxIndex += 1
+                        }
+                    }, 100)
+                })
+            }
+            
+
+            document.addEventListener('mousemove', debounce(handleMousemove, 10))
+        </script>
+    </body>
+</html>
