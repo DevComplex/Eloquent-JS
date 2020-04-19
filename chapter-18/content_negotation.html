@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+            .hide {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <button class="request-button">Request</button>
+        <button class="clear-button">Clear</button>
+        <span class="loading hide">Loading...</span>
+        <section class="details-section">
+        </section>
+
+
+        <script>
+            const BASE_URL = 'https://eloquentjavascript.net/author'
+
+            const acceptTypes = [
+                'text/plain',
+                'text/html',
+                'application/json'
+            ]
+
+            const makeGetRequest = async (url, acceptType) => {
+                const req = await fetch(BASE_URL, {
+                    method: 'get',
+                    headers: {
+                        'Accept': acceptType
+                    }
+                })
+
+                if (req.ok) {
+                    return req.text()
+                }
+
+                return Promise.reject(`Error making request... Status: ${req.status}`)
+            }
+
+            const requestButton = document.querySelector('.request-button')
+            const clearButton = document.querySelector('.clear-button')
+
+            const loading = document.querySelector('.loading')
+            const detailsSection = document.querySelector('.details-section')
+
+            clearButton.addEventListener('click', () => {
+                detailsSection.innerHTML = ''
+            })
+
+            requestButton.addEventListener('click', () => {
+                const allRequests = Promise.all(acceptTypes.map(type => makeGetRequest(BASE_URL, type)))
+
+                const toggleHide = el => el.classList.toggle('hide')
+
+                toggleHide(requestButton)
+                toggleHide(clearButton)
+                toggleHide(loading)
+
+                detailsSection.innerHTML = ''
+
+                allRequests
+                    .then((results) => {
+                        for(let i = 0; i < results.length; i++) {
+                            const d = Detail(acceptTypes[i], results[i])
+                            detailsSection.appendChild(d)
+                        }
+
+
+                        toggleHide(requestButton)
+                        toggleHide(loading)
+                        toggleHide(clearButton)
+
+                        const anotherAcceptType = 'application/rainbows+unicorns'
+
+                        makeGetRequest(BASE_URL, 'application/rainbows+unicorns')
+                            .then(() => {
+                                alert(`Successful call to ${BASE_URL} w/ Accept: ${anotherAcceptType}`)
+                            })
+                            .catch((err) => {
+                                alert(`Unsuccessful call to ${BASE_URL} w/ Accept: ${anotherAcceptType}. ${err}`)
+                            })
+                    })
+            })
+
+            function Detail(type, content) {
+                const detail = document.createElement('div')
+                detail.class = 'detail'
+
+                const detailType = document.createElement('h4')
+                detailType.class = 'detail-type'
+                detailType.textContent = type
+
+                const detailContent = document.createElement('p')
+                detailContent.class = content
+                detailContent.textContent = content
+
+                detail.appendChild(detailType)
+                detail.appendChild(detailContent)
+
+                return detail
+            }
+        </script>
+    </body>
+</html>
