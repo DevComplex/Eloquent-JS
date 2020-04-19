@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+            textarea {
+                font-size: 20px;
+                height: 300px;
+                width: 500px;
+            }
+
+            .result {
+                font-size: 20px;
+                height: 300px;
+                width: 500px;
+                border: 2px solid orange;
+            }
+
+            .execute-button {
+                height: 24px;
+                width: 120px;
+                display: inline-block;
+                border: 2px solid blue;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+    </head>
+    <body>
+        <textarea class='code'></textarea>
+        <div class='result'></div>
+        <br/>
+        <div class='execute-button'>Execute</div>
+
+        <script>
+            const code = document.querySelector('.code')
+            const executeButton = document.querySelector('.execute-button')
+            const result = document.querySelector('.result')
+
+            executeButton.addEventListener('click', () => {
+                result.textContent = ''
+
+                try {
+                    const res = eval(code.value)
+
+                    if (!res) {
+                        result.textContent = 'Undefined'
+                    } else {
+                        result.textContent = res
+                    }
+                } catch (error) {
+                    alert(`Error executing code... ${error}`)
+                }
+
+            })
+        </script>
+    </body>
+</html>
